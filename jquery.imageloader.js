@@ -9,61 +9,76 @@ function($) {
  * fire error?
  */
 $.fn.imageloader = function (opts) {
-	var $elms,
-  $parent = $(this),
-	namespace = '_' + ('' + (new Date()).valueOf()).slice(-7),
-	hasFinished = false,
-	loadedImageCounter = 0,
-	defaults = null,
+	var namespace = '_' + ('' + (new Date()).valueOf()).slice(-7),
+  q = Queue.getInstance(),
 	DEFAULT_OPTIONS = {
 		selector: '.myimage',
+    dataattr: 'src',
 		background: false,
 		callback: function () {}
-	},
-  q = Queue.getInstance();
-
-  var buildSelector = function () {
-    return [defaults.selector, '[data-src]'].join('');
-  };
+	};
 
 	var init = function (i) {
-		defaults = $.extend({}, DEFAULT_OPTIONS, opts);
-		$elms = $parent.find(buildSelector());
-    if ($elms.length === 0) {
-      finishImageLoad();
+    var self = this;
+    var $this = $(this);
+    var data = $this.data();
+		var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
+		var $elms = $this.find(buildSelector(defaults.selector, defaults.dataattr));
+    var len = $elms.length;
+
+    data['imageloader-callback'] = defaults.callback;
+    data['imageloader-hasFinished'] = false;
+    data['imageloader-loadedImageCounter'] = 0;
+    data['imageloader-length'] = len;
+
+    if (len === 0) {
+      finishImageLoad(this);
     }
     else {
 			$elms.each(
 				function (i, elm) {
-          q.add(generateImageLoadFunc(elm, $parent, namespace, defaults.background));
+          q.add(buildImageLoadFunc(elm, self, namespace, defaults.background));
 				}
 			);
-      // console.log(['we are gonna load ', $elms.length, ' image(s) on ', namespace].join(''));
-			$parent.on('loadImage.' + namespace, onLoadImage);
+      // console.log(['we are gonna load ', len, ' image(s) on ', namespace].join(''));
+			$this.on('loadImage.' + namespace, onLoadImage);
       q.run();
 		}
 		return this;
 	};
 
 	var onLoadImage = function (ev, elm) {
-    // console.log(elm);
-		if (hasFinished) {
-			// console.log('onLoadImage: hasFinished but still called?');
+    // console.log('onLoadImage', ev, elm);
+    var parent = ev.currentTarget;
+    var data = $(parent).data();
+		if (data['imageloader-hasFinished']) {
+			console.log('onLoadImage: hasFinished but still called?');
 			return;
 		}
-		++loadedImageCounter;
-		if (loadedImageCounter >= $elms.length) {
-			finishImageLoad();
+    ++data['imageloader-loadedImageCounter'];
+		if (data['imageloader-loadedImageCounter'] >= data['imageloader-length']) {
+			finishImageLoad(parent);
 		}
 	};
 
-	var finishImageLoad = function () {
-		hasFinished = true;
-		defaults.callback();
+	var finishImageLoad = function (parent) {
+    // console.log('finishImageLoad', parent);
+    var $parent = $(parent);
+    var data = $parent.data();
+    data['imageloader-hasFinished'] = true;
+    data['imageloader-callback']();
 		$parent.off('loadImage.' + namespace, onLoadImage);
+    delete data['imageloader-callback'];
+    delete data['imageloader-hasFinished'];
+    delete data['imageloader-loadedImageCounter'];
+    delete data['imageloader-length'];
 	};
 
-	var generateImageLoadFunc = function (elm, $parent, namespace, isBg) {
+  var buildSelector = function (selector, dataattr) {
+    return [selector, '[data-', dataattr, ']'].join('');
+  };
+
+	var buildImageLoadFunc = function (elm, parent, namespace, isBg) {
 		var $elm = $(elm),
 		src = $elm.data('src');
 
@@ -73,7 +88,7 @@ $.fn.imageloader = function (opts) {
 			}
       // delete attribute
       $elm.removeAttr('data-src');
-      $parent.triggerHandler('loadImage.' + namespace, elm);
+      $(parent).triggerHandler('loadImage.' + namespace, elm);
 		};
 
 		return function () {
@@ -103,8 +118,10 @@ $.fn.imageloader = function (opts) {
 		};
 	};
 
-	return $parent.each(init);
+	return this.each(init);
 };
+
+// ===================================================================
 
 var MILSEC_INTERVAL = 23;
 var instance;
