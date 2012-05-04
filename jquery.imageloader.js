@@ -1,7 +1,7 @@
 (
 function($) {
 
-var MILSEC_INTERVAL = 13;
+var MILSEC_INTERVAL = 17;
 var DEFAULT_OPTIONS = {
   selector: '.myimage',
   dataattr: 'src',
@@ -78,7 +78,7 @@ $.fn.imageloader = function (opts) {
       function () {
         callback();
       },
-      MILSEC_INTERVAL
+      MILSEC_INTERVAL * 2
     );
   };
 
