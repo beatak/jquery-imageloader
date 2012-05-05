@@ -1,4 +1,6 @@
 jquery-imageloader
 ==================
 
-jQuery.imageloader helps you to load images not on page load, and gives you call back when it&#39;s all done.
+jQuery.imageloader() lets you load images lazily.  It is designed to be memory less intensive, cleaning up all after done and using a singleton-style queue mechanism so that it won't overwhelm browser UI thread.
+
+todo: maybe count seconds and if still not loading all, should fire error?
