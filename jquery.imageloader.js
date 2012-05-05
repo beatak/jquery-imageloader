@@ -10,8 +10,10 @@ var DEFAULT_OPTIONS = {
 };
 
 /**
- * memory less intensive, supposed to be clean up all afer done,
- * no event attaching image loader.
+ * jQuery.imageloader() lets you load images lazily.  It is designed
+ * to be memory less intensive, cleaning up all after done and using
+ * a singleton-style queue mechanism so that it won't overwhelm 
+ * browser UI thread.
  * 
  * todo: maybe count seconds and if still not loading all, should
  * fire error?
@@ -24,7 +26,7 @@ $.fn.imageloader = function (opts) {
     var $this = $(this);
     var data = $this.data();
     var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
-    var $elms = $this.find(buildSelector(defaults.selector, defaults.dataattr));
+    var $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
     var len = $elms.length;
     var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
 
@@ -40,7 +42,7 @@ $.fn.imageloader = function (opts) {
     else {
       $elms.each(
         function (i, elm) {
-          q.add(buildImageLoadFunc(elm, self, ns, defaults.background));
+          q.add(buildImageLoadFunc(elm, self, ns, defaults.background, defaults.dataattr));
         }
       );
       // console.log(['we are gonna load ', len, ' image(s) on ', ns].join(''));
@@ -82,11 +84,7 @@ $.fn.imageloader = function (opts) {
     );
   };
 
-  var buildSelector = function (selector, dataattr) {
-    return [selector, '[data-', dataattr, ']'].join('');
-  };
-
-  var buildImageLoadFunc = function (elm, parent, namespace, isBg) {
+  var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
     var $elm = $(elm),
     src = $elm.data('src');
 
@@ -95,7 +93,7 @@ $.fn.imageloader = function (opts) {
         $elm.remove();
       }
       // delete attribute
-      $elm.removeAttr('data-src');
+      $elm.removeAttr( ['data-', attr].join('') );
       $(parent).triggerHandler('loadImage.' + namespace, elm);
     };
 
@@ -130,38 +128,37 @@ $.fn.imageloader = function (opts) {
 
 // ===================================================================
 
-var instance;
+var _queue_instance_;
 var Queue = {
   getInstance: function () {
-    if (typeof instance === 'undefined') {
-      instance = new QueueThread();
+    if (_queue_instance_ instanceof QueueImpl === false) {
+      _queue_instance_ = new QueueImpl();
     }
-    return instance;
+    return _queue_instance_;
   }
 };
 
-var QueueThread = function () {
+var QueueImpl = function () {
   this.index = 0;
   this.queue = [];
   this.isRunning = false;
 }
 
-QueueThread.prototype.add = function (func) {
+QueueImpl.prototype.add = function (func) {
   if (typeof func !== 'function') {
     throw new Error('you can only pass function.');
   }
   this.queue[this.queue.length] = func;
 };
 
-QueueThread.prototype.run = function (firenow) {
+QueueImpl.prototype.run = function (firenow) {
   firenow = firenow || false;
   var run = this.run.bind(this);
   if (this.isRunning && !firenow) {
     return;
   }
   this.isRunning = true;
-  this.queue[this.index]();
-  ++this.index;
+  this.queue[this.index++]();
   if (this.index < this.queue.length) {
     setTimeout(
       function () {
