@@ -21,23 +21,25 @@ var DEFAULT_OPTIONS = {
 $.fn.imageloader = function (opts) {
   var q = Queue.getInstance();
 
-  var init = function (i) {
+  var init = function () {
     var self = this;
     var $this = $(this);
-    var data = $this.data();
     var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
     var $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
     var len = $elms.length;
     var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
-
-    data['imageloader-callback'] = defaults.callback;
-    data['imageloader-isLoading'] = true;
-    data['imageloader-loadedImageCounter'] = 0;
-    data['imageloader-length'] = len;
-    data['imageloader-namespace'] = ns;
+    $this.data(
+      ns,
+      {
+        callback: defaults.callback,
+        isLoading: true,
+        loadedImageCounter: 0,
+        length: len
+      }
+    );
 
     if (len === 0) {
-      finishImageLoad(this);
+      finishImageLoad(this, ns);
     }
     else {
       $elms.each(
@@ -53,29 +55,26 @@ $.fn.imageloader = function (opts) {
   };
 
   var onLoadImage = function (ev, elm) {
+    // console.log('onLoadImage: ', ev.namespace);
     var parent = ev.currentTarget;
-    var data = $(parent).data();
-    if (!data['imageloader-isLoading']) {
+    var defaults = $(parent).data(ev.namespace);
+    if (!defaults.isLoading) {
       // console.log('onLoadImage: is not loading but still called?');
       return;
     }
-    ++data['imageloader-loadedImageCounter'];
-    if (data['imageloader-loadedImageCounter'] >= data['imageloader-length']) {
-      finishImageLoad(parent);
+    ++defaults.loadedImageCounter;
+    if (defaults.loadedImageCounter >= defaults.length) {
+      finishImageLoad(parent, ev.namespace);
     }
   };
 
-  var finishImageLoad = function (parent) {
+  var finishImageLoad = function (parent, ns) {
+    // console.log('finishImageLoad: ', ns);
     var $parent = $(parent);
     var data = $parent.data();
-    var callback = data['imageloader-callback'];
-    var ns = data['imageloader-namespace'];
+    var callback = data[ns].callback;
     $parent.off('loadImage.' + ns, onLoadImage);
-    delete data['imageloader-callback'];
-    delete data['imageloader-isLoading'];
-    delete data['imageloader-loadedImageCounter'];
-    delete data['imageloader-length'];
-    delete data['imageloader-namespace'];
+    delete data[ns];
     setTimeout(
       function () {
         callback();
@@ -153,7 +152,7 @@ QueueImpl.prototype.add = function (func) {
 
 QueueImpl.prototype.run = function (firenow) {
   firenow = firenow || false;
-  var run = this.run.bind(this);
+  var run = $.proxy(this.run, this);
   if (this.isRunning && !firenow) {
     return;
   }
