@@ -54,75 +54,77 @@ $.fn.imageloader = function (opts) {
     return this;
   };
 
-  var onLoadImage = function (ev, elm) {
-    // console.log('onLoadImage: ', ev.namespace);
-    var parent = ev.currentTarget;
-    var defaults = $(parent).data(ev.namespace);
-    if (!defaults.isLoading) {
-      // console.log('onLoadImage: is not loading but still called?');
-      return;
-    }
-    ++defaults.loadedImageCounter;
-    if (defaults.loadedImageCounter >= defaults.length) {
-      finishImageLoad(parent, ev.namespace);
-    }
-  };
-
-  var finishImageLoad = function (parent, ns) {
-    // console.log('finishImageLoad: ', ns);
-    var $parent = $(parent);
-    var data = $parent.data();
-    var callback = data[ns].callback;
-    $parent.off('loadImage.' + ns, onLoadImage);
-    delete data[ns];
-    setTimeout(
-      function () {
-        callback();
-      },
-      MILSEC_INTERVAL * 2
-    );
-  };
-
-  var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
-    var $elm = $(elm),
-    src = $elm.data('src');
-
-    var onFinishLoagImage = function (ev) {
-      if (ev && ev.type === 'error') {
-        $elm.remove();
-      }
-      // delete attribute
-      $elm.removeAttr( ['data-', attr].join('') );
-      $(parent).triggerHandler('loadImage.' + namespace, elm);
-    };
-
-    return function () {
-      $('<img />')
-        .bind(
-          'error',
-          function (ev) {
-            $(this).unbind('error').unbind('load');
-            onFinishLoagImage(ev);
-          }
-        )
-        .bind(
-          'load',
-          function(ev) {
-            $(this).unbind('error').unbind('load');
-            if (isBg) {
-              $elm.css('background-image', ['url(', src, ')'].join(''));
-            }
-            else {
-              $elm.attr('src', src);
-            }
-            onFinishLoagImage(ev);
-          }
-        )
-        .attr('src', src);
-    };
-  };
-
   return this.each(init);
+};
+
+// ===================================================================
+
+var onLoadImage = function (ev, elm) {
+  // console.log('onLoadImage: ', ev.namespace);
+  var parent = ev.currentTarget;
+  var defaults = $(parent).data(ev.namespace);
+  if (!defaults.isLoading) {
+    // console.log('onLoadImage: is not loading but still called?');
+    return;
+  }
+  ++defaults.loadedImageCounter;
+  if (defaults.loadedImageCounter >= defaults.length) {
+    finishImageLoad(parent, ev.namespace);
+  }
+};
+
+var finishImageLoad = function (parent, ns) {
+  // console.log('finishImageLoad: ', ns);
+  var $parent = $(parent);
+  var data = $parent.data();
+  var callback = data[ns].callback;
+  $parent.off('loadImage.' + ns, onLoadImage);
+  delete data[ns];
+  setTimeout(
+    function () {
+      callback();
+    },
+    MILSEC_INTERVAL * 2
+  );
+};
+
+var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
+  var $elm = $(elm);
+  var src = $elm.data('src');
+
+  var onFinishLoagImage = function (ev) {
+    if (ev && ev.type === 'error') {
+      $elm.remove();
+    }
+    // delete attribute
+    $elm.removeAttr( ['data-', attr].join('') );
+    $(parent).triggerHandler('loadImage.' + namespace, elm);
+  };
+
+  return function () {
+    $('<img />')
+      .bind(
+        'error',
+        function (ev) {
+          $(this).unbind('error').unbind('load');
+          onFinishLoagImage(ev);
+        }
+      )
+      .bind(
+        'load',
+        function(ev) {
+          $(this).unbind('error').unbind('load');
+          if (isBg) {
+            $elm.css('background-image', ['url(', src, ')'].join(''));
+          }
+          else {
+            $elm.attr('src', src);
+          }
+          onFinishLoagImage(ev);
+        }
+      )
+      .attr('src', src);
+  };
 };
 
 // ===================================================================
