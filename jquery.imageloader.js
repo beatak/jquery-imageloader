@@ -143,7 +143,7 @@ var QueueImpl = function () {
   this.index = 0;
   this.queue = [];
   this.isRunning = false;
-}
+};
 
 QueueImpl.prototype.add = function (func) {
   if (typeof func !== 'function') {
