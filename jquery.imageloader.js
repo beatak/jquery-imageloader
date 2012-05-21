@@ -25,9 +25,18 @@ $.fn.imageloader = function (opts) {
     var self = this;
     var $this = $(this);
     var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
-    var $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
-    var len = $elms.length;
     var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
+    var $elms
+    var len;
+    if (defaults.selector === ':self') {
+      $elms = $this;
+      len = 1;
+    }
+    else {
+      $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
+      len = $elms.length;
+    }
+
     $this.data(
       ns,
       {
