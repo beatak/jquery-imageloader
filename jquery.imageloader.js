@@ -14,9 +14,6 @@ var DEFAULT_OPTIONS = {
  * to be memory less intensive, cleaning up all after done and using
  * a singleton queue mechanism so that it won't overwhelm browser UI
  * thread.
- * 
- * todo: maybe count seconds and if still not loading all, should
- * fire error?
  */
 $.fn.imageloader = function (opts) {
   var q = Queue.getInstance();
@@ -26,7 +23,7 @@ $.fn.imageloader = function (opts) {
     var $this = $(this);
     var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
     var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
-    var $elms
+    var $elms;
     var len;
     if (defaults.selector === ':self') {
       $elms = $this;
@@ -100,6 +97,7 @@ var finishImageLoad = function (parent, ns) {
 var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
   var $elm = $(elm);
   var src = $elm.data('src');
+  var hasFinished = false;
 
   var onFinishLoagImage = function (ev) {
     if (ev && ev.type === 'error') {
@@ -111,10 +109,11 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
   };
 
   return function () {
-    $('<img />')
+    var $img = $('<img />')
       .bind(
         'error',
         function (ev) {
+          hasFinished = true;
           $(this).unbind('error').unbind('load');
           onFinishLoagImage(ev);
         }
@@ -122,6 +121,7 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
       .bind(
         'load',
         function(ev) {
+          hasFinished = true;
           $(this).unbind('error').unbind('load');
           if (isBg) {
             $elm.css('background-image', ['url(', src, ')'].join(''));
@@ -133,6 +133,15 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
         }
       )
       .attr('src', src);
+    setTimeout(
+      function () {
+        if (hasFinished === false) {
+  	      // console.log('timeout');
+  	      $img.trigger('error');
+        }
+      },
+      5000
+    );
   };
 };
 
