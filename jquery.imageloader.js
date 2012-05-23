@@ -93,7 +93,7 @@ var finishImageLoad = function (parent, ns) {
   if (typeof callback === 'function') {
     setTimeout(
       function () {
-        callback();
+        callback(parent);
       },
       $.imageloader.queueInterval * 2
     );
