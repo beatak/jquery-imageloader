@@ -28,7 +28,8 @@ $.fn.imageloader = function (opts) {
     var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
     var $elms;
     var len = 0;
-    if (defaults.selector === '' && $this.attr( ['[data-', defaults.dataattr, ']'].join('') )) {
+
+    if (defaults.selector === '' && $this.data(defaults.dataattr) ) {
       $elms = $this;
       len = 1;
     }
