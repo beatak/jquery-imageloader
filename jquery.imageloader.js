@@ -1,12 +1,15 @@
 (
 function($) {
 
-var MILSEC_INTERVAL = 17;
+$.imageloader = {
+  queueInterval: 17
+};
 var DEFAULT_OPTIONS = {
-  selector: '.myimage',
+  selector: '',
   dataattr: 'src',
   background: false,
-  callback: function () {}
+  callback: null,
+  timeout: 5000
 };
 
 /**
@@ -14,9 +17,6 @@ var DEFAULT_OPTIONS = {
  * to be memory less intensive, cleaning up all after done and using
  * a singleton queue mechanism so that it won't overwhelm browser UI
  * thread.
- * 
- * todo: maybe count seconds and if still not loading all, should
- * fire error?
  */
 $.fn.imageloader = function (opts) {
   var q = Queue.getInstance();
@@ -25,9 +25,19 @@ $.fn.imageloader = function (opts) {
     var self = this;
     var $this = $(this);
     var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
-    var $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
-    var len = $elms.length;
     var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
+    var $elms;
+    var len = 0;
+
+    if (defaults.selector === '' && $this.data(defaults.dataattr) ) {
+      $elms = $this;
+      len = 1;
+    }
+    else {
+      $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
+      len = $elms.length;
+    }
+
     $this.data(
       ns,
       {
@@ -44,7 +54,7 @@ $.fn.imageloader = function (opts) {
     else {
       $elms.each(
         function (i, elm) {
-          q.add(buildImageLoadFunc(elm, self, ns, defaults.background, defaults.dataattr));
+          q.add(buildImageLoadFunc(elm, self, ns, defaults.background, defaults.dataattr, defaults.timeout));
         }
       );
       // console.log(['we are gonna load ', len, ' image(s) on ', ns].join(''));
@@ -80,17 +90,20 @@ var finishImageLoad = function (parent, ns) {
   var callback = data[ns].callback;
   $parent.off('loadImage.' + ns, onLoadImage);
   delete data[ns];
-  setTimeout(
-    function () {
-      callback();
-    },
-    MILSEC_INTERVAL * 2
-  );
+  if (typeof callback === 'function') {
+    setTimeout(
+      function () {
+        callback(parent);
+      },
+      $.imageloader.queueInterval * 2
+    );
+  }
 };
 
-var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
+var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr, milsec_timeout) {
   var $elm = $(elm);
   var src = $elm.data('src');
+  var hasFinished = false;
 
   var onFinishLoagImage = function (ev) {
     if (ev && ev.type === 'error') {
@@ -102,10 +115,12 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
   };
 
   return function () {
-    $('<img />')
+    var $img = $('<img />')
       .bind(
         'error',
         function (ev) {
+          hasFinished = true;
+          clearTimeout(timer_handler);
           $(this).unbind('error').unbind('load');
           onFinishLoagImage(ev);
         }
@@ -113,6 +128,8 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
       .bind(
         'load',
         function(ev) {
+          hasFinished = true;
+          clearTimeout(timer_handler);
           $(this).unbind('error').unbind('load');
           if (isBg) {
             $elm.css('background-image', ['url(', src, ')'].join(''));
@@ -124,6 +141,15 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr) {
         }
       )
       .attr('src', src);
+    var timer_handler = setTimeout(
+      function () {
+        if (hasFinished === false) {
+          // console.log('timeout');
+          $img.trigger('error');
+        }
+      },
+      milsec_timeout
+    );
   };
 };
 
@@ -143,7 +169,7 @@ var QueueImpl = function () {
   this.index = 0;
   this.queue = [];
   this.isRunning = false;
-}
+};
 
 QueueImpl.prototype.add = function (func) {
   if (typeof func !== 'function') {
@@ -165,7 +191,7 @@ QueueImpl.prototype.run = function (firenow) {
       function () {
         run(true);
       },
-      MILSEC_INTERVAL
+      $.imageloader.queueInterval
     );
   }
   else {
