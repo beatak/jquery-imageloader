@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
   exports.five = function (obj) {
-    console.log('processing five');
+    // console.log('processing five');
     return $.map(obj.value.items[0].responseData.feed.entries, processItem);
   };
 

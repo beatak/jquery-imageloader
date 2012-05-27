@@ -227,7 +227,7 @@ function () {
   };
 
   window.benchmark = function (winload, loadup) {
-    console.log('benchmark: ', winload, loadup);
+    // console.log('benchmark: ', winload, loadup);
     var $row = $('.tr-' + window.hook);
     if (winload) {
       $row.find('.counter[title="winload"]').html(winload);
@@ -250,23 +250,20 @@ function () {
   };
 
   window.receivejsonp = function (obj) {
-    console.log('receivejsonp');
+    // console.log('receivejsonp');
     var result;
     var key;
 
     if (obj) {
-
-      console.log(obj);
-
       if (obj.generator && obj.generator.indexOf('www.flickr.com') > -1) {
-        console.log('receivejsonp: ', 'flickr');
+        // console.log('receivejsonp: ', 'flickr');
         result = adapter.flickr(obj);
         key = 'FLICKR';
       }
 
       try {
         if (!result && obj.value.items[0].responseData.feed.link && obj.value.items[0].responseData.feed.link.indexOf('500px.com') > -1) {
-          console.log('receivejsonp: ', '500px');
+          // console.log('receivejsonp: ', '500px');
           result = adapter.five(obj);
           key = '500PX';
         }
@@ -274,15 +271,15 @@ function () {
 
       try {
         if (!result && obj.value.items[0].responseData.feed.description && obj.value.items[0].responseData.feed.description.indexOf('imgur.com') > -1) {
-          console.log('receivejsonp: ', 'IMGUR');
+          // console.log('receivejsonp: ', 'IMGUR');
           result = adapter.imgur(obj);
           key = 'IMGUR';
         }
       } catch (er) {}
 
       if (!result) {
-        console.log('a new kind');
-        console.log(obj);
+        // console.log('a new kind');
+        // console.log(obj);
         return;
       }
     }
