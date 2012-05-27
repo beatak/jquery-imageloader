@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>jQuery.imageloader() lets you load lazily so that your page gets loaded quicker.</title>
+    <link rel="stylesheet" href="assets/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="assets/index.css" type="text/css" />
+    <link rel="stylesheet" href="assets/prettify.css" type="text/css" />
+    <script type="text/javascript" src="assets/require.js"></script>
+    <script type="text/javascript" src="assets/prettify.js"></script>
+  </head>
+  <body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="brand" href="http://twitter.com/beatak">@beatak</a>
+      <div class="nav-collapse collapse">
+        <ul class="nav">
+          <li class="active">
+            <a href="#overview">Overview</a>
+          </li>
+          <li class="">
+            <a href="#examples">Examples</a>
+          </li>
+          <li class="">
+            <a href="#faq">FAQ</a>
+          </li>
+          <li class="">
+            <a href="#documentation">Documentation</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <a class="invisible-anchor" name="overview">&nbsp;</a>
+  <header class="jumbotron masthead">
+    <div class="inner">
+      <h1>jQuery.imageloader()</h1>
+      <p>lets you have granular controls of image loading timing</p>
+      <p class="download-info">
+        <a href="https://github.com/beatak/jquery-imageloader/" class="btn btn-primary btn-large">View project on GitHub</a>
+        <a href="https://github.com/beatak/jquery-imageloader/zipball/master" class="btn btn-large">Download latest</a>
+      </p>
+    </div>
+
+    <div class="bs-links">
+      <ul class="quick-links">
+        <li class="follow-btn">
+          <a href="https://twitter.com/beatak" class="twitter-follow-button" data-link-color="#0069D6" data-show-count="true">Follow @beatak</a>
+        </li>
+      </ul>
+    </div>
+  </header>
+
+  <hr class="soften" />
+
+  <a class="invisible-anchor" name="examples">&nbsp;</a>
+  <section class="examples">
+
+    <!-- ========================================================= -->
+
+    <div class="page-header">
+      <h1>Exmples</h1>
+    </div>
+
+     <!-- ========================================================= -->
+
+     <div class="row">
+       <div class="span4">
+         <p>if you just want to load image lazily: <button id="example-0">load!</button> </p>
+         <div>
+           <img class="lazy-img" src="assets/0.png" data-src="assets/city/w50/aep.jpg" />
+           <img class="lazy-img" src="assets/0.png" data-src="assets/city/w50/bog.jpg" />
+           <img class="lazy-img" src="assets/0.png" data-src="assets/city/w50/bom.jpg" />
+         </div>
+       </div>
+
+       <div class="span8">
+         <pre class="prettyprint linenums">&lt;img class="lazy-img" src="assets/0.png" data-src="assets/img1.jpg" /&gt;
+&lt;img class="lazy-img" src="assets/0.png" data-src="assets/img2.jpg" /&gt;
+&lt;img class="lazy-img" src="assets/0.png" data-src="assets/img3.jpg" /&gt;
+&lt;script&gt;
+  $(function() {
+    $('.lazy-img').imageloader();
+  });
+&lt;/script&gt;</pre>
+       </div>
+     </div>
+
+     <!-- ========================================================= -->
+
+     <div class="row">
+       <div class="span8">
+         <pre class="prettyprint linenums">&lt;style type="text/css"&gt;
+  .defferred-block { display: none; }
+&lt;/style&gt;
+&lt;div class="deffered-block"&gt;
+  &lt;img class="defferred" src="assets/0.png" data-src="assets/img1.jpg" /&gt;
+  &lt;img class="defferred" src="assets/0.png" data-src="assets/img2.jpg" /&gt;
+  &lt;img class="defferred" src="assets/0.png" data-src="assets/img3.jpg" /&gt;
+&lt;/div&gt;
+&hellip;
+&lt;script&gt;
+  $(function() {
+    $('.deffered-block').imageloader(
+      {
+        selector: '.defferred',
+        callback: function (elm) {
+          $(elm).slideDown();
+        }
+      }
+    );
+  });
+&lt;/script&gt;</pre>
+       </div>
+
+       <div class="span4">
+         <p>If you have multiple images lasily loaded with a height-required action. <button id="example-1">load!</button></p>
+         <div class="deffered-block">
+           <img class="defferred" src="assets/0.png" data-src="assets/city/w50/ccu.jpg" />
+           <img class="defferred" src="assets/0.png" data-src="assets/city/w50/cgk.jpg" />
+           <img class="defferred" src="assets/0.png" data-src="assets/city/w50/dac.jpg" />
+         </div>
+         <div class="deffered-block">
+           <img class="defferred" src="assets/0.png" data-src="assets/city/w50/del.jpg" />
+           <img class="defferred" src="assets/0.png" data-src="assets/city/w50/hkg.jpg" />
+           <img class="defferred" src="assets/0.png" data-src="assets/city/w50/ist.jpg" />
+         </div>
+       </div>
+
+     </div>
+
+     <!-- ========================================================= -->
+
+     <div class="row">
+       <div class="span4">
+         <p>You can load images to background as well. <button id="example-2">load!</button> </p>
+         <div class="clearfix">
+           <div class="my-square-image" data-src="assets/city/w50/khi.jpg">&nbsp</div>
+           <div class="my-square-image" data-src="assets/city/w50/lax.jpg">&nbsp</div>
+           <div class="my-square-image" data-src="assets/city/w50/lcy.jpg">&nbsp</div>
+         </div>
+       </div>
+
+       <div class="span8">
+         <pre class="prettyprint linenums">&lt;style type="text/css"&gt;
+  .my-square-image { display:none; width: 50px; height: 50px; float: left; }
+&lt;/style&gt;
+&lt;div class="clearfix"&gt;
+  &lt;div class="my-square-image" data-src="assets/img1.jpg"&gt;&amp;nbsp&lt;/div&gt;
+  &lt;div class="my-square-image" data-src="assets/img2.jpg"&gt;&amp;nbsp&lt;/div&gt;
+  &lt;div class="my-square-image" data-src="assets/img3.jpg"&gt;&amp;nbsp&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+  $(function() {
+    $('.my-square-image').imageloader(
+      {
+        background: true,
+        callback: function (elm) {
+          $(elm).fadeIn();
+        }
+      }
+    );
+  });
+&lt;/script&gt;</pre>
+       </div>
+     </div>
+
+     <!-- ========================================================= -->
+
+     <div class="row" id="external-load">
+       <div class="span12">
+         <p>If you click the buttons below, it will open a popup window with pages that have several images.  If you load all <em id="imagecount"></em> images out of <em id="imageallcount"></em> on <code>window.onload</code> and <code>jQuery.imageloader lazy load</code> how different it would be?</p>
+       </div>
+
+       <div class="span4">
+         <p class="small">(note: every page load of this page, JavaScript fetches different pictures from Flickr, 500px and imgur.  But still this is affected by cache, obviously.  Try reload the page a few times.)</p>          
+         <p>
+           <button id="nomarlimageloading">Load all at once</button> <br />
+           <button id="jqueryimageloading">Load with jQuery.imageloader</button>
+         </p>
+       </div>
+
+       <div class="span8">
+         <table class="table table-bordered table-condensed">
+           <tbody>
+             <tr>
+               <th colspan="2" class="th-background">All at once</th>
+             </tr>
+             <tr class="tr-all">
+               <td>window.onload<br />(all image loaded): </td>
+               <td><span class="counter" title="winload">&nbsp;</span> Milli-Second</td>
+             </tr>
+             <tr>
+               <th colspan="2" class="th-background">jQuery.imageloader()</th>
+             </tr>
+             <tr class="tr-jil">
+               <td>window.onload:</td>
+               <td><span class="counter" title="winload">&nbsp;</span> Milli-Second</td>
+             </tr>
+             <tr class="tr-jil">
+               <td>(all image loaded):</td>
+               <td><span class="counter" title="loadup">&nbsp;</span> Milli-Second</td>
+             </tr>
+           </tbody>
+         </table>
+       </div>
+     </div>
+
+     <!-- ========================================================= -->
+
+  </section>
+
+  <a class="invisible-anchor" name="faq">&nbsp;</a>
+  <section class="FAQ">
+    <div class="page-header">
+      <h1>FAQ</h1>
+    </div>
+
+    <div class="row">
+      <div class="span6">
+        <dl>
+          <dt>Who is using this?</dt>
+          <dd><a href="http://www.meetup.com/" target="_blank">Meetup</a> is using this.</dd>
+        </dl>
+      </div>
+
+      <div class="span6">
+        <dl>
+          <dt>Why I wanna use this?</dt>
+          <dd>Because it is designed to be flexible, memory less intensive, cleaning up all after done, and using a singleton queue mechanism so that it won't overwhelm browser UI thread.</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================= -->
+
+  <a class="invisible-anchor" name="documentation">&nbsp;</a>
+  <section class="FAQ">
+    <div class="page-header">
+      <h1>Documentation</h1>
+    </div>
+
+     <div class="row">
+       <div class="span12">
+         <h2>Coming soon!</h2>
+       </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p class="pull-right"><a href="#">Back to top</a></p>
+    <p>Designed in Meetup by <a href="http://twitter.com/mdo" target="_blank">@beatak</a>.</p>
+    <p>Code licensed under the <a href="#" target="_blank">MIT</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+    <p>Icons from <a href="http://glyphicons.com">Glyphicons Free</a>, licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
+  </footer>
+
+</div>
+
+<script type="template/mustache" id="template-window">
+  <html>
+    <head>
+      {{{SCRIPT0}}}
+      {{{SCRIPT1}}}
+      <title>{{TITLE}}</title>
+    </head>
+    <body {{{SCRIPTONLOAD}}}>
+      {{{CONTENT}}}
+    </body>
+  </html>
+</script>
+
+<script type="template/mustache" id="template-imgblock-normal">
+  <div style="float:left; width: 96px; height: 96px; overflow: hidden; padding: 1px; border: 1px solid #CCC; margin: 0 1px 1px 0;"><img src="{{{src}}}" /></div>
+</script>
+
+<script type="template/mustache" id="template-imgblock-lazy">
+  <div style="float:left; width: 96px; height: 96px; overflow: hidden; padding: 1px; border: 1px solid #CCC; margin: 0 1px 1px 0;"><img src="assets/0.png" data-src="{{{src}}}" /></div>
+</script>
+
+<script type="text/javascript" src="assets/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="assets/mustache.js"></script>
+<script type="text/javascript" src="jquery.imageloader.js"></script>
+<script type="text/javascript" src="assets/index.js"></script>
+
+  </body>
+</html>
