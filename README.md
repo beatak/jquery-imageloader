@@ -11,7 +11,7 @@ DEMO
 EXAMPLE
 -------
 
-    $('.YOUR-SELECTOR').fn.imageloader(OPTIONS)
+    $('.YOUR-SELECTOR').imageloader(OPTIONS)
 
 OPTIONS
 -------
