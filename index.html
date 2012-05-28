@@ -41,15 +41,15 @@
       <h1>jQuery.imageloader()</h1>
       <p>lets you have granular controls of image loading timing</p>
       <p class="download-info">
-        <a href="https://github.com/beatak/jquery-imageloader/" class="btn btn-primary btn-large">View project on GitHub</a>
-        <a href="https://github.com/beatak/jquery-imageloader/zipball/master" class="btn btn-large">Download latest</a>
+        <a href="http://github.com/beatak/jquery-imageloader/" class="btn btn-primary btn-large">View project on GitHub</a>
+        <a href="http://github.com/beatak/jquery-imageloader/zipball/master" class="btn btn-large">Download latest</a>
       </p>
     </div>
 
     <div class="bs-links">
       <ul class="quick-links">
         <li class="follow-btn">
-          <a href="https://twitter.com/beatak" class="twitter-follow-button" data-link-color="#0069D6" data-show-count="true">Follow @beatak</a>
+          <a href="http://twitter.com/beatak" class="twitter-follow-button" data-link-color="#0069D6" data-show-count="true">Follow @beatak</a>
         </li>
       </ul>
     </div>
@@ -247,7 +247,127 @@
 
      <div class="row">
        <div class="span12">
-         <h2>Coming soon!</h2>
+         <p>The instance option as follows:</p>
+         <table class="table table-bordered table-condensed">
+           <thead class="th-background">
+             <th>
+               Name
+             </th>
+             <th>
+               Type
+             </th>
+             <th>
+               Default
+             </th>
+             <th>
+               Description
+             </th>
+           </thead>
+           <tr>
+             <td>
+               <strong>selector</strong>
+             </td>
+             <td>
+               string
+             </td>
+             <td>
+               (empty string)
+             </td>
+             <td>
+               Selector for the elements that $.fn.imageloader() will look for in order to load the image. If the empty string is passed, $.fn.imageloader() will try to load the image on "<em>this</em>" object.
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <strong>dataattr</strong>
+             </td>
+             <td>
+               string
+             </td>
+             <td>
+               "src"
+             </td>
+             <td>
+               Data attribute for the elements that $.fn.imageloader() will look for. As default, $.fn.imageloader() will look for data-src attribute.
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <strong>background</strong>
+             </td>
+             <td>
+               boolean
+             </td>
+             <td>
+               false
+             </td>
+             <td>
+               <em>true</em> if you want to load image as background-image css.
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <strong>callback</strong>
+             </td>
+             <td>
+               function
+             </td>
+             <td>
+               null
+             </td>
+             <td>
+               Callback function when the image is loaded. "<em>this</em>" is passed as the first argument. See <a href="#examples">Examples above</a>.
+             </td>
+           </tr>
+           <tr>
+             <td>
+               <strong>timeout</strong>
+             </td>
+             <td>
+               number
+             </td>
+             <td>
+               5000
+             </td>
+             <td>
+               Millisecond for loading timeout.
+             </td>
+           </tr>
+         </table>
+
+         <hr />
+         <p>There is also a global option:</p>
+         <table class="table table-bordered table-condensed">
+           <thead class="th-background">
+             <th>
+               Name
+             </th>
+             <th>
+               Type
+             </th>
+             <th>
+               Default
+             </th>
+             <th>
+               Description
+             </th>
+           </thead>
+           <tr>
+             <td>
+               <strong>$.imageloader.queueInterval</strong>
+             </td>
+             <td>
+               number
+             </td>
+             <td>
+               17
+             </td>
+             <td>
+               A browser can only issue parallel HTTP requests 2 to 9 for each domain name as a default (<a href="http://www.browserscope.org/?category=network" title="Connections per Hostname">according to Browserscope</a>, May 2012). When you try to load massive numbers of images all at once, it can consume all browser's UI thread. So <em>$.fn.imageloader()</em> is using a time-domain queue for controling loading timing. 17 millisecond is a one frame delay under 60fps. As default, when you apply $.fn.imageloader() to numbers of elements, it will make &lt;img&gt; elements every 17 milliseconds.
+             </td>
+           </tr>
+         </table>
+
        </div>
     </div>
   </section>
@@ -256,7 +376,6 @@
     <p class="pull-right"><a href="#">Back to top</a></p>
     <p>Designed in Meetup by <a href="http://twitter.com/mdo" target="_blank">@beatak</a>.</p>
     <p>Code licensed under the <a href="#" target="_blank">MIT</a>. Documentation licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
-    <p>Icons from <a href="http://glyphicons.com">Glyphicons Free</a>, licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</p>
   </footer>
 
 </div>
