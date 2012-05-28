@@ -1,5 +1,4 @@
-(
-function($) {
+(function($) {
 
 $.imageloader = {
   queueInterval: 17
@@ -13,10 +12,10 @@ var DEFAULT_OPTIONS = {
 };
 
 /**
- * jQuery.imageloader() lets you load images lazily.  It is designed
- * to be memory less intensive, cleaning up all after done and using
- * a singleton queue mechanism so that it won't overwhelm browser UI
- * thread.
+ * jQuery.imageloader
+ * (C) 2012, Takashi Mizohata
+ * http://beatak.github.com/jquery-imageloader/
+ * MIT LICENSE
  */
 $.fn.imageloader = function (opts) {
   var q = Queue.getInstance();
