@@ -174,7 +174,7 @@ QueueImpl.prototype.add = function (func) {
   if (typeof func !== 'function') {
     throw new Error('you can only pass function.');
   }
-  this.queue[this.queue.length] = func;
+  this.queue.push(func);
 };
 
 QueueImpl.prototype.run = function (firenow) {
