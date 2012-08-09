@@ -13,6 +13,7 @@ var DEFAULT_OPTIONS = {
   selector: '',
   dataattr: 'src',
   background: false,
+  each: null,
   callback: null,
   timeout: 5000
 };
@@ -37,6 +38,7 @@ var init = function (_i, self, opts) {
   $this.data(
     ns,
     {
+      each: defaults.each,
       callback: defaults.callback,
       isLoading: true,
       loadedImageCounter: 0,
@@ -69,6 +71,9 @@ var onLoadImage = function (ev, elm) {
   if (!defaults.isLoading) {
     // console.log('onLoadImage: is not loading but still called?');
     return;
+  }
+  if (typeof defaults.each === 'function') {
+    defaults.each(elm);
   }
   ++defaults.loadedImageCounter;
   if (defaults.loadedImageCounter >= defaults.length) {
