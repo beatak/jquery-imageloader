@@ -23,6 +23,7 @@ Name|Type|Default|Description
 **selector**|string|(empty string)|Selector for the elements that $.fn.imageloader() will look for in order to load the image. If the empty string is passed, $.fn.imageloader() will try to load the image on "*this*" object.
 **dataattr**|string|"src"|Data attribute for the elements that $.fn.imageloader() will look for. As default, $.fn.imageloader() will look for data-src attribute.
 **background**|boolean|false|*true* if you want to load image as background-image css.
+**each**|function|null|Callback function for each image is loaded. when you try to load one image, it doesn't make any difference from *callback*. See [Demo](http://beatak.github.com/jquery-imageloader/ "github page")
 **callback**|function|null|Callback function when the image is loaded. "*this*" is passed as the first argument. See [Demo](http://beatak.github.com/jquery-imageloader/ "github page")
 **timeout**|number|5000|Millisecond for loading timeout.
 
