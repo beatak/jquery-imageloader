@@ -1,8 +1,14 @@
 (function($) {
 
-$.imageloader = {
-  queueInterval: 17
-};
+"use strict";
+
+/**
+ * jQuery.imageloader
+ * (C) 2012, Takashi Mizohata
+ * http://beatak.github.com/jquery-imageloader/
+ * MIT LICENSE
+ */
+
 var DEFAULT_OPTIONS = {
   selector: '',
   dataattr: 'src',
@@ -11,59 +17,47 @@ var DEFAULT_OPTIONS = {
   timeout: 5000
 };
 
-/**
- * jQuery.imageloader
- * (C) 2012, Takashi Mizohata
- * http://beatak.github.com/jquery-imageloader/
- * MIT LICENSE
- */
-$.fn.imageloader = function (opts) {
+var init = function (_i, self, opts) {
   var q = Queue.getInstance();
+  var $this = $(self);
+  var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
+  var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
+  var $elms;
+  var len = 0;
 
-  var init = function () {
-    var self = this;
-    var $this = $(this);
-    var defaults = $.extend({}, DEFAULT_OPTIONS, opts || {});
-    var ns = '_' + ('' + (new Date()).valueOf()).slice(-7);
-    var $elms;
-    var len = 0;
+  if (defaults.selector === '' && $this.data(defaults.dataattr) ) {
+    $elms = $this;
+    len = 1;
+  }
+  else {
+    $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
+    len = $elms.length;
+  }
 
-    if (defaults.selector === '' && $this.data(defaults.dataattr) ) {
-      $elms = $this;
-      len = 1;
+  $this.data(
+    ns,
+    {
+      callback: defaults.callback,
+      isLoading: true,
+      loadedImageCounter: 0,
+      length: len
     }
-    else {
-      $elms = $this.find([defaults.selector, '[data-', defaults.dataattr, ']'].join(''));
-      len = $elms.length;
-    }
+  );
 
-    $this.data(
-      ns,
-      {
-        callback: defaults.callback,
-        isLoading: true,
-        loadedImageCounter: 0,
-        length: len
+  if (len === 0) {
+    finishImageLoad(this, ns);
+  }
+  else {
+    $elms.each(
+      function (i, elm) {
+        q.add(buildImageLoadFunc(elm, self, ns, defaults.background, defaults.dataattr, defaults.timeout));
       }
     );
-
-    if (len === 0) {
-      finishImageLoad(this, ns);
-    }
-    else {
-      $elms.each(
-        function (i, elm) {
-          q.add(buildImageLoadFunc(elm, self, ns, defaults.background, defaults.dataattr, defaults.timeout));
-        }
-      );
-      // console.log(['we are gonna load ', len, ' image(s) on ', ns].join(''));
-      $this.on('loadImage.' + ns, onLoadImage);
-      q.run();
-    }
-    return this;
-  };
-
-  return this.each(init);
+    // console.log(['we are gonna load ', len, ' image(s) on ', ns].join(''));
+    $this.on('loadImage.' + ns, onLoadImage);
+    q.run();
+  }
+  return this;
 };
 
 // ===================================================================
@@ -178,8 +172,8 @@ QueueImpl.prototype.add = function (func) {
 };
 
 QueueImpl.prototype.run = function (firenow) {
-  firenow = firenow || false;
   var run = $.proxy(this.run, this);
+  firenow = firenow || false;
   if (this.isRunning && !firenow) {
     return;
   }
@@ -196,6 +190,20 @@ QueueImpl.prototype.run = function (firenow) {
   else {
     this.isRunning = false;
   }
+};
+
+// ===================================================================
+
+$.imageloader = {
+  queueInterval: 17
+};
+
+$.fn.imageloader = function (opts) {
+  return this.each(
+    function (i, elm) {
+      init(i, elm, opts);
+    }
+  );
 };
 
 })(jQuery);
