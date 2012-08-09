@@ -171,6 +171,43 @@
 
      <!-- ========================================================= -->
 
+     <div class="row">
+       <div class="span8">
+         <pre class="prettyprint linenums">&lt;div class="each-img-block"&gt;
+  &lt;img class="each-img" src="assets/0.png" data-src="assets/img1.jpg" /&gt;
+  &lt;img class="each-img" src="assets/0.png" data-src="assets/img2.jpg" /&gt;
+  &lt;img class="each-img" src="assets/0.png" data-src="assets/img3.jpg" /&gt;
+&lt;/div&gt;
+&lt;script&gt;
+  $(function() {
+    $('.each-img-block').imageloader(
+      {
+        selector: '.each-img',
+        each: function (elm) {
+          console.log(elm);
+        },
+        callback: function (elm) {
+          $(elm).fadeIn();
+        }
+      }
+    );
+  });
+&lt;/script&gt;</pre>
+       </div>
+
+       <div class="span4">
+         <p>For each image gets loaded, it fires a function. <button id="example-3">load!</button></p>
+         <div class="each-img-block">
+           <img class="each-img" src="assets/0.png" data-src="assets/city/w50/lim.jpg" />
+           <img class="each-img" src="assets/0.png" data-src="assets/city/w50/los.jpg" />
+           <img class="each-img" src="assets/0.png" data-src="assets/city/w50/mex.jpg" />
+         </div>
+       </div>
+
+     </div>
+
+     <!-- ========================================================= -->
+
      <div class="row" id="external-load">
        <div class="span12">
          <p>If you click the buttons below, it will open a popup window with pages that have several images.  If you load all <em id="imagecount"></em> images out of <em id="imageallcount"></em> on <code>window.onload</code> and <code>jQuery.imageloader lazy load</code> how different it would be?</p>

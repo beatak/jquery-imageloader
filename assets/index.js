@@ -52,6 +52,7 @@ function () {
       $('#example-0').click(example0);
       $('#example-1').click(example1);
       $('#example-2').click(example2);
+      $('#example-3').click(example3);
 
       require(
         [
@@ -89,6 +90,25 @@ function () {
       {
         background: true,
         callback: function (elm) {
+          $(elm).fadeIn();
+        }
+      }
+    );
+  };
+
+  var example3 = function (ev) {
+    ev.preventDefault();
+    $('.each-img-block').imageloader(
+      {
+        selector: '.each-img',
+        each: function (elm) {
+          console.log(elm);
+          $(elm).css('visibility', 'hidden');
+        },
+        callback: function (elm) {
+          $(elm)
+            .hide()
+            .find('.each-img').css('visibility', 'visible');
           $(elm).fadeIn();
         }
       }
