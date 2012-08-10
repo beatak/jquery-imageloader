@@ -47,7 +47,7 @@ var init = function (_i, self, opts) {
   );
 
   if (len === 0) {
-    finishImageLoad(this, ns);
+    finishImageLoad(self, ns);
   }
   else {
     $elms.each(
@@ -59,12 +59,12 @@ var init = function (_i, self, opts) {
     $this.on('loadImage.' + ns, onLoadImage);
     q.run();
   }
-  return this;
+  return self;
 };
 
 // ===================================================================
 
-var onLoadImage = function (ev, elm) {
+var onLoadImage = function (ev, elm, img) {
   // console.log('onLoadImage: ', ev.namespace);
   var parent = ev.currentTarget;
   var defaults = $(parent).data(ev.namespace);
@@ -73,7 +73,7 @@ var onLoadImage = function (ev, elm) {
     return;
   }
   if (typeof defaults.each === 'function') {
-    defaults.each(elm);
+    defaults.each(elm, img);
   }
   ++defaults.loadedImageCounter;
   if (defaults.loadedImageCounter >= defaults.length) {
@@ -103,17 +103,19 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr, milsec_ti
   var src = $elm.data('src');
   var hasFinished = false;
 
-  var onFinishLoagImage = function (ev) {
+  var onFinishLoagImage = function (ev, img) {
     if (ev && ev.type === 'error') {
       $elm.remove();
     }
     // delete attribute
     $elm.removeAttr( ['data-', attr].join('') );
-    $(parent).triggerHandler('loadImage.' + namespace, elm);
+    $(parent).triggerHandler('loadImage.' + namespace, [elm, img]);
   };
 
   return function () {
-    var $img = $('<img />')
+    var timer_handler;
+    var $img = $('<img />'); // this statement is kinda silly, but IE needs this separated.
+    $img
       .bind(
         'error',
         function (ev) {
@@ -135,11 +137,11 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr, milsec_ti
           else {
             $elm.attr('src', src);
           }
-          onFinishLoagImage(ev);
+          onFinishLoagImage(ev, $img[0]);
         }
       )
       .attr('src', src);
-    var timer_handler = setTimeout(
+    timer_handler = setTimeout(
       function () {
         if (hasFinished === false) {
           // console.log('timeout');
