@@ -14,6 +14,7 @@ var DEFAULT_OPTIONS = {
   dataattr: 'src',
   background: false,
   each: null,
+  eacherror: null,
   callback: null,
   timeout: 5000
 };
@@ -39,6 +40,7 @@ var init = function (_i, self, opts) {
     ns,
     {
       each: defaults.each,
+      eacherror: defaults.eacherror,
       callback: defaults.callback,
       isLoading: true,
       loadedImageCounter: 0,
@@ -64,7 +66,7 @@ var init = function (_i, self, opts) {
 
 // ===================================================================
 
-var onLoadImage = function (ev, elm, img) {
+var onLoadImage = function (ev, elm, img, isError) {
   // console.log('onLoadImage: ', ev.namespace);
   var parent = ev.currentTarget;
   var defaults = $(parent).data(ev.namespace);
@@ -72,7 +74,17 @@ var onLoadImage = function (ev, elm, img) {
     // console.log('onLoadImage: is not loading but still called?');
     return;
   }
-  if (typeof defaults.each === 'function') {
+  if (isError) {
+    if (typeof defaults.eacherror === 'function') {
+      defaults.eacherror(elm);
+    }
+    else {
+      if (elm.parentNode !== null) {
+        elm.parentNode.removeChild(elm);
+      }
+    }
+  }
+  else if (typeof defaults.each === 'function') {
     defaults.each(elm, img);
   }
   ++defaults.loadedImageCounter;
@@ -104,12 +116,9 @@ var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr, milsec_ti
   var hasFinished = false;
 
   var onFinishLoagImage = function (ev, img) {
-    if (ev && ev.type === 'error') {
-      $elm.remove();
-    }
     // delete attribute
     $elm.removeAttr( ['data-', attr].join('') );
-    $(parent).triggerHandler('loadImage.' + namespace, [elm, img]);
+    $(parent).triggerHandler('loadImage.' + namespace, [elm, img, (ev && ev.type === 'error')]);
   };
 
   return function () {
