@@ -112,7 +112,7 @@ var finishImageLoad = function (parent, ns) {
 
 var buildImageLoadFunc = function (elm, parent, namespace, isBg, attr, milsec_timeout) {
   var $elm = $(elm);
-  var src = $elm.data('src');
+  var src = $elm.data(attr);
   var hasFinished = false;
 
   var onFinishLoagImage = function (ev, img) {
