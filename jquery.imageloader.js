@@ -16,7 +16,8 @@ var DEFAULT_OPTIONS = {
   each: null,
   eacherror: null,
   callback: null,
-  timeout: 5000
+  timeout: 5000,
+  purge: true // remove DOM node in case of error during image loading
 };
 
 var init = function (_i, self, opts) {
@@ -44,7 +45,8 @@ var init = function (_i, self, opts) {
       callback: defaults.callback,
       isLoading: true,
       loadedImageCounter: 0,
-      length: len
+      length: len,
+      purge: defaults.purge
     }
   );
 
@@ -79,7 +81,9 @@ var onLoadImage = function (ev, elm, img, isError) {
       defaults.eacherror(elm);
     }
     else {
-      if (elm.parentNode !== null) {
+      if (defaults.purge === true && elm.parentNode !== null) {
+          console.log('Removing...');
+          console.log(elm);
         elm.parentNode.removeChild(elm);
       }
     }
