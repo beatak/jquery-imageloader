@@ -1,0 +1,9 @@
+{
+  "name": "jquery-imageloader",
+  "version": "dev-master",
+  "homepage": "https://github.com/beatak/jquery-imageloader",
+  "main": "jquery.imageloader.js",
+  "dependencies": {
+    "jquery": ">= 1.8.1"
+  }
+}

@@ -26,6 +26,7 @@ Name|Type|Default|Description
 **each**|function|null|Callback function for each image is loaded. when you try to load one image, it doesn't make any difference from *callback*. See [Demo](http://beatak.github.com/jquery-imageloader/ "github page")
 **callback**|function|null|Callback function when the image is loaded. "*this*" is passed as the first argument. See [Demo](http://beatak.github.com/jquery-imageloader/ "github page")
 **timeout**|number|5000|Millisecond for loading timeout.
+**purge**|boolean|true|*false* if you don't want to removing DOM element in case of failing image loading
 
 ***
 
